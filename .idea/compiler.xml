@@ -4,6 +4,8 @@
     <bytecodeTargetLevel>
       <module name="firsttry_main" target="1.8" />
       <module name="firsttry_test" target="1.8" />
+      <module name="second_main" target="1.8" />
+      <module name="second_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
