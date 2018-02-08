@@ -1,77 +1,81 @@
 package first;
 
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
-
+import java.util.regex.Pattern;
 import java.util.concurrent.TimeUnit;
-import java.util.Date;
-import java.io.File;
-
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.testng.annotations.*;
+import static org.testng.Assert.*;
 import org.openqa.selenium.*;
-
-import static org.openqa.selenium.OutputType.*;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.Select;
 
 public class Test1 {
-    FirefoxDriver wd;
+    private WebDriver driver;
+    private String baseUrl;
+    private boolean acceptNextAlert = true;
+    private StringBuffer verificationErrors = new StringBuffer();
 
-    @BeforeMethod
+    @BeforeClass(alwaysRun = true)
     public void setUp() throws Exception {
-        wd = new FirefoxDriver();
-        wd.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        loginStartpage() ;
-
-    }
-
-    private void loginStartpage() {
-        wd.get("http://sb-oad-test.reksoft.ru/app1/dictionaries/businessesUnits");
+        driver = new FirefoxDriver();
+        baseUrl = "https://www.katalon.com/";
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     }
 
     @Test
-    public void testMetod() {
-        //wd.findElement(By.linkText("Создать")).click();
-        newbuisnessunit();
-        fillingForm();
-        completeButton();
+    public void testUntitledTestCase() throws Exception {
+        driver.get("http://sb-oad-test.reksoft.ru/app1/dictionaries/subdivisions");
+        driver.findElement(By.xpath("//div[@id='root']/div/div[2]/div[2]/div[2]/div/div/div/div/a[4]/div")).click();
+        Thread.sleep(1000);
+        driver.findElement(By.cssSelector("a.add-link > span.label")).click();
+        driver.findElement(By.cssSelector("input.input")).click();
+        driver.findElement(By.cssSelector("input.input")).clear();
+        driver.findElement(By.cssSelector("input.input")).sendKeys("name");
+        driver.findElement(By.cssSelector("label.f-label")).click();
+        driver.findElement(By.xpath("//input[@value='']")).click();
+        driver.findElement(By.xpath("//input[@value='']")).clear();
+        driver.findElement(By.xpath("//input[@value='']")).sendKeys("comment");
+        driver.findElement(By.cssSelector("button.g-button.success")).click();
     }
 
-    private void completeButton() {
-        wd.findElement(By.cssSelector("button.g-button.success")).click();
-    }
-
-    private void fillingForm() {
-        wd.findElement(By.cssSelector("input.input")).click();
-        wd.findElement(By.cssSelector("input.input")).clear();
-        wd.findElement(By.cssSelector("input.input")).sendKeys("новый");
-        wd.findElement(By.cssSelector("label.f-label")).click();
-        if (!wd.findElement(By.id("active")).isSelected()) {
-            wd.findElement(By.id("active")).click();
+    @AfterClass(alwaysRun = true)
+    public void tearDown() throws Exception {
+        driver.quit();
+        String verificationErrorString = verificationErrors.toString();
+        if (!"".equals(verificationErrorString)) {
+            fail(verificationErrorString);
         }
-        wd.findElement(By.xpath("//div[@class='f-form']/div[5]/div[2]/input")).click();
-        wd.findElement(By.xpath("//div[@class='f-form']/div[5]/div[2]/input")).clear();
-        wd.findElement(By.xpath("//div[@class='f-form']/div[5]/div[2]/input")).sendKeys("кек");
     }
 
-    private void newbuisnessunit() {
-        wd.get("http://sb-oad-test.reksoft.ru/app1/dictionaries/businessesUnits/new");
-    }
-
-    @AfterMethod
-    public void tearDown() {
-        wd.quit();
-    }
-
-    public static boolean isAlertPresent(FirefoxDriver wd) {
+    private boolean isElementPresent(By by) {
         try {
-            wd.switchTo().alert();
+            driver.findElement(by);
+            return true;
+        } catch (NoSuchElementException e) {
+            return false;
+        }
+    }
+
+    private boolean isAlertPresent() {
+        try {
+            driver.switchTo().alert();
             return true;
         } catch (NoAlertPresentException e) {
             return false;
+        }
+    }
+
+    private String closeAlertAndGetItsText() {
+        try {
+            Alert alert = driver.switchTo().alert();
+            String alertText = alert.getText();
+            if (acceptNextAlert) {
+                alert.accept();
+            } else {
+                alert.dismiss();
+            }
+            return alertText;
+        } finally {
+            acceptNextAlert = true;
         }
     }
 }
